@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour {
     public float timeToReachMaxSpeed;
 
     private Vector2 previousInputVector;
+    private GridObject objectToShove;
 
 	// Use this for initialization
 	void Start () {
@@ -22,6 +23,7 @@ public class PlayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         MovePlayer();
+        ShoveObjects();
 	}
 
     void MovePlayer()
@@ -42,5 +44,24 @@ public class PlayerController : MonoBehaviour {
         // TODO: Normalize this vector properly
         Vector2 inputVector = new Vector2(Input.GetAxis("Horizontal" + playerNum), Input.GetAxis("Vertical" + playerNum));
         return inputVector / Mathf.Max(1f,inputVector.magnitude);
+    }
+
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        GridObject gridObject = hit.collider.gameObject.GetComponent<GridObject>();
+        if (gridObject)
+        {
+            objectToShove = gridObject;
+        }
+    }
+
+    void ShoveObjects()
+    {
+        if(Input.GetButtonDown("Shove" + playerNum) && objectToShove)
+        {
+            objectToShove.ShoveFurniture(objectToShove.transform.position - transform.position);
+        }
+
+        objectToShove = null;
     }
 }
