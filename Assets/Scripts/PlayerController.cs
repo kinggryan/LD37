@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour {
 
     private Vector2 previousInputVector;
     private GridObject objectToShove;
+    private Vector3 objectToShoveDirection;
 
 	// Use this for initialization
 	void Start () {
@@ -49,9 +50,15 @@ public class PlayerController : MonoBehaviour {
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         GridObject gridObject = hit.collider.gameObject.GetComponent<GridObject>();
+        if(!gridObject)
+        {
+            gridObject = hit.collider.gameObject.GetComponentInParent<GridObject>();
+        }
+
         if (gridObject)
         {
             objectToShove = gridObject;
+            objectToShoveDirection = -hit.normal;
         }
     }
 
@@ -59,7 +66,8 @@ public class PlayerController : MonoBehaviour {
     {
         if(Input.GetButtonDown("Shove" + playerNum) && objectToShove)
         {
-            objectToShove.ShoveFurniture(objectToShove.transform.position - transform.position);
+            // TODO: Fix this for non 1x1 objects
+            objectToShove.ShoveFurniture(objectToShoveDirection);
         }
 
         objectToShove = null;
