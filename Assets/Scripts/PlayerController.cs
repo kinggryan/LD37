@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour {
 
     private CharacterController characterController;
 
+    public int playerNum;
     public float maxSpeed;
     public float timeToReachMaxSpeed;
 
@@ -39,7 +40,7 @@ public class PlayerController : MonoBehaviour {
     Vector2 GetInputVector()
     {
         // TODO: Normalize this vector properly
-        Vector2 inputVector = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        Vector2 inputVector = new Vector2(Input.GetAxis("Horizontal" + playerNum), Input.GetAxis("Vertical" + playerNum));
         return inputVector / Mathf.Max(1f,inputVector.magnitude);
     }
 }
