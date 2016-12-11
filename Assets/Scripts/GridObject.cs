@@ -21,7 +21,7 @@ public class GridObject : MonoBehaviour {
     private Vector3 slideVector;
     private int endSlideGridX;
     private int endSlideGridY;
-    private List<GridObject> interlockedObjects = new List<GridObject>();
+    private HashSet<GridObject> interlockedObjects = new HashSet<GridObject>();
 
     // Use this for initialization
     void Start() {
@@ -147,34 +147,43 @@ public class GridObject : MonoBehaviour {
 
     public void ShoveFurniture(Vector3 shoveDirectionWorldSpace)
     {
-        // TODO: Verify we wouldn't hit a grid object immediately.
+        if(furnitureState == FurnitureState.Stopped && CanBeShovedInDirection(shoveDirectionWorldSpace))
+        {
+            SlideInDirection(shoveDirectionWorldSpace);
+        }
+    }
+
+    public bool CanBeShovedInDirection(Vector3 shoveDirectionWorldSpace)
+    {
+        // Verify we wouldn't hit a grid object immediately.
         RaycastHit[] hitsInShoveDirection = rigidbody.SweepTestAll(shoveDirectionWorldSpace, 0.3f, QueryTriggerInteraction.Collide);
         bool hitGridObj = false;
-        foreach(RaycastHit hitInfo in hitsInShoveDirection)
+        foreach (RaycastHit hitInfo in hitsInShoveDirection)
         {
             GridObject gridObj = hitInfo.collider.GetComponent<GridObject>();
-            if( (gridObj && gridObj != this) || hitInfo.collider.GetComponent<Wall>())
+            if ((gridObj && gridObj != this) || hitInfo.collider.GetComponent<Wall>())
             {
                 hitGridObj = true;
             }
         }
 
-        if(furnitureState == FurnitureState.Stopped && !hitGridObj)
-        {
-            // Determine direction to shove
-            if (Mathf.Abs(shoveDirectionWorldSpace.x) > Mathf.Abs(shoveDirectionWorldSpace.z))
-            {
-                slideVector = new Vector3(slideSpeed * Mathf.Sign(shoveDirectionWorldSpace.x), 0, 0);
-            }
-            else
-            {
-                slideVector = new Vector3(0, 0, slideSpeed * Mathf.Sign(shoveDirectionWorldSpace.z));
-            }
-
-            furnitureState = FurnitureState.Sliding;
-        }
+        return !hitGridObj;
     }
 
+    public void SlideInDirection(Vector3 shoveDirectionWorldSpace)
+    {
+        // Determine direction to shove
+        if (Mathf.Abs(shoveDirectionWorldSpace.x) > Mathf.Abs(shoveDirectionWorldSpace.z))
+        {
+            slideVector = new Vector3(slideSpeed * Mathf.Sign(shoveDirectionWorldSpace.x), 0, 0);
+        }
+        else
+        {
+            slideVector = new Vector3(0, 0, slideSpeed * Mathf.Sign(shoveDirectionWorldSpace.z));
+        }
+
+        furnitureState = FurnitureState.Sliding;
+    }
     
     public void LockIntoPlaceWithObjects(GridObject[] otherObjects)
     {
@@ -182,6 +191,11 @@ public class GridObject : MonoBehaviour {
         {
             // First time interlocking
             icon.LockIntoPlace();
+        }
+
+        foreach(GridObject obj in otherObjects)
+        {
+            interlockedObjects.Add(obj);
         }
     }
 
