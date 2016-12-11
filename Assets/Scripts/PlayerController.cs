@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour {
     private Vector2 previousInputVector;
     private GridObject objectToShove;
     private Vector3 objectToShoveDirection;
-
+    
 
     // Use this for initialization
     void Start () {
@@ -84,7 +84,10 @@ public class PlayerController : MonoBehaviour {
             }
             else if(gridObject.ShouldShovePlayer())
             {
+                // Ignore the collision when performing this move to prevent infinite loops
+                Physics.IgnoreCollision(characterController, hit.collider);
                 characterController.Move(gridObject.ShovePlayerVector()*Time.deltaTime);
+                Physics.IgnoreCollision(characterController, hit.collider,false);
                 transform.position += new Vector3(0, 0.5f - transform.position.y, 0);
             }
         }

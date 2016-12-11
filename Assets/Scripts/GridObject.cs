@@ -74,9 +74,19 @@ public class GridObject : MonoBehaviour {
             //            float epsilon = 0.1f;
             //            if (Vector3.Angle(collision.contacts[0].normal, -slideVector.normalized) < epsilon)
             //            {
-            StartSlidingToStop(endSlideGridX, endSlideGridY);
+            StartSlidingToStop();
+            foreach(GridObject obj in interlockedObjects)
+            {
+                obj.StartSlidingToStop();
+            }
             //            }
         }
+    }
+
+    public void StartSlidingToStop()
+    {
+        if(furnitureState == FurnitureState.Sliding)
+            StartSlidingToStop(endSlideGridX, endSlideGridY);
     }
 
     void StartSlidingToStop(int posX, int posY)
@@ -147,10 +157,27 @@ public class GridObject : MonoBehaviour {
 
     public void ShoveFurniture(Vector3 shoveDirectionWorldSpace)
     {
-        if(furnitureState == FurnitureState.Stopped && CanBeShovedInDirection(shoveDirectionWorldSpace))
+        if(furnitureState == FurnitureState.Stopped && CanBeShovedInDirection(shoveDirectionWorldSpace) && InterlockedObjectsCanBeShovedInDirection(shoveDirectionWorldSpace))
         {
             SlideInDirection(shoveDirectionWorldSpace);
+            foreach(GridObject obj in interlockedObjects)
+            {
+                obj.SlideInDirection(shoveDirectionWorldSpace);
+            }
         }
+    }
+
+    public bool InterlockedObjectsCanBeShovedInDirection(Vector3 shoveDirectionWorldSpace)
+    {
+        foreach(GridObject obj in interlockedObjects)
+        {
+            if(!obj.CanBeShovedInDirection(shoveDirectionWorldSpace))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public bool CanBeShovedInDirection(Vector3 shoveDirectionWorldSpace)
@@ -161,7 +188,7 @@ public class GridObject : MonoBehaviour {
         foreach (RaycastHit hitInfo in hitsInShoveDirection)
         {
             GridObject gridObj = hitInfo.collider.GetComponent<GridObject>();
-            if ((gridObj && gridObj != this) || hitInfo.collider.GetComponent<Wall>())
+            if ((gridObj && gridObj != this && !interlockedObjects.Contains(gridObj)) || hitInfo.collider.GetComponent<Wall>())
             {
                 hitGridObj = true;
             }
@@ -195,6 +222,14 @@ public class GridObject : MonoBehaviour {
 
         foreach(GridObject obj in otherObjects)
         {
+            foreach(Collider col in obj.GetComponents<Collider>())
+            {
+                foreach(Collider selfcol in GetComponents<Collider>())
+                {
+                    Physics.IgnoreCollision(selfcol, col);
+                }
+            }
+               
             interlockedObjects.Add(obj);
         }
     }

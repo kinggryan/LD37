@@ -78,8 +78,6 @@ public class PlayerGoalManager : MonoBehaviour {
             {
                 objRenderer.material.color = playerColor;
             }
-
-            Debug.Log("Adding " + objToAdd + " to " + this);
         }
 
         return newSet;
