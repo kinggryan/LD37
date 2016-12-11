@@ -27,9 +27,9 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
         MovePlayer();
         ShoveObjects();
-        if(transform.position.y != 0)
+        if(!Mathf.Approximately(0.5f,transform.position.y))
         {
-            characterController.SimpleMove(new Vector3(0, -transform.position.y, 0));
+            characterController.SimpleMove(new Vector3(0, 0.5f - transform.position.y, 0));
         }
         UpdateAnimator();
 	}
@@ -77,8 +77,16 @@ public class PlayerController : MonoBehaviour {
 
         if (gridObject)
         {
-            objectToShove = gridObject;
-            objectToShoveDirection = -hit.normal;
+            if(gridObject.CanBeShoved())
+            {
+                objectToShove = gridObject;
+                objectToShoveDirection = -hit.normal;
+            }
+            else if(gridObject.ShouldShovePlayer())
+            {
+                characterController.Move(gridObject.ShovePlayerVector()*Time.deltaTime);
+                transform.position += new Vector3(0, 0.5f - transform.position.y, 0);
+            }
         }
     }
 

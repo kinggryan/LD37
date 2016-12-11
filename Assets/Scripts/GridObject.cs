@@ -23,14 +23,14 @@ public class GridObject : MonoBehaviour {
     private int endSlideGridY;
     private List<GridObject> interlockedObjects = new List<GridObject>();
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         if (gameGrid == null)
             InitializeGameGrid();
 
         SetupOnGrid();
         rigidbody = GetComponent<Rigidbody>();
-	}
+    }
 
     void InitializeGameGrid()
     {
@@ -45,21 +45,21 @@ public class GridObject : MonoBehaviour {
         gridX = GetGridXPositionFromWorldPosition(transform.position);
         gridY = GetGridYPositionFromWorldPosition(transform.position);
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update() {
         // If we're sliding, track the grid position
-        if(furnitureState == FurnitureState.Sliding)
+        if (furnitureState == FurnitureState.Sliding)
         {
-            transform.position += Time.deltaTime*slideVector;
+            transform.position += Time.deltaTime * slideVector;
             endSlideGridX = GetGridXPositionFromWorldPosition(transform.position);
             endSlideGridY = GetGridYPositionFromWorldPosition(transform.position);
         }
-        else if(furnitureState == FurnitureState.Stopping)
+        else if (furnitureState == FurnitureState.Stopping)
         {
             SlideToStop();
         }
-	}
+    }
 
     void OnTriggerEnter(Collider collider)
     {
@@ -67,15 +67,15 @@ public class GridObject : MonoBehaviour {
         GridObject collidedGridObj = collider.gameObject.GetComponent<GridObject>();
         Wall wall = collider.gameObject.GetComponent<Wall>();
 
-        if(((collidedGridObj && collidedGridObj != this) || wall) && furnitureState == FurnitureState.Sliding)
+        if (((collidedGridObj && collidedGridObj != this) || wall) && furnitureState == FurnitureState.Sliding)
         {
             // If we are the object that hit the other object, eg the normals are along our movement axis.
             // TODO: Will this work with perfectly diagonal collisions?
             //            float epsilon = 0.1f;
             //            if (Vector3.Angle(collision.contacts[0].normal, -slideVector.normalized) < epsilon)
             //            {
-            StartSlidingToStop(endSlideGridX,endSlideGridY);
-//            }
+            StartSlidingToStop(endSlideGridX, endSlideGridY);
+            //            }
         }
     }
 
@@ -113,10 +113,10 @@ public class GridObject : MonoBehaviour {
 
         List<GridObject> adjObjs = new List<GridObject>();
 
-        foreach(RaycastHit hitInfo in allHits)
+        foreach (RaycastHit hitInfo in allHits)
         {
             GridObject gridObject = hitInfo.collider.GetComponent<GridObject>();
-            if(gridObject && gridObject != this)
+            if (gridObject && gridObject != this)
             {
                 adjObjs.Add(gridObject);
             }
@@ -133,6 +133,16 @@ public class GridObject : MonoBehaviour {
     public bool CanBeShoved()
     {
         return furnitureState == FurnitureState.Stopped;
+    }
+
+    public bool ShouldShovePlayer()
+    {
+        return furnitureState == FurnitureState.Sliding;
+    }
+
+    public Vector3 ShovePlayerVector()
+    {
+        return slideVector;
     }
 
     public void ShoveFurniture(Vector3 shoveDirectionWorldSpace)
