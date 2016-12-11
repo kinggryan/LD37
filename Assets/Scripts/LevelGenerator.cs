@@ -31,7 +31,7 @@ public class LevelGenerator : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-
+        GenerateLevel();
     }
 
     // Update is called once per frame
@@ -95,7 +95,9 @@ public class LevelGenerator : MonoBehaviour {
         int numObjectsToSpawn = Random.Range(minNumFurniture, maxNumFurniture);
         int num2x1s = Mathf.FloorToInt(numObjectsToSpawn * Random.Range(minProportion2x1s, maxProportion2x1s));
         int num1x1s = numObjectsToSpawn - num2x1s;
-        return CreateGridObjects(num1x1s, num2x1s);
+        List<LevelGeneratorGridObject> objects =  CreateGridObjects(num1x1s, num2x1s);
+        AddObjectsToGrid(objects);
+        return objects;
     }
 
     void AddObjectsToGrid(List<LevelGeneratorGridObject> gridObjects)
@@ -133,6 +135,8 @@ public class LevelGenerator : MonoBehaviour {
             RandomizeGridObjectRotation(gridObj);
             int randomX = Random.Range(0, levelWidth - gridObj.width + 1);
             int randomY = Random.Range(0, levelHeight - gridObj.height + 1);
+            gridObj.x = randomX;
+            gridObj.y = randomY;
             if(ObjectCanFitIntoGrid(gridObj))
             {
                 return;
