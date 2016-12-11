@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class WallGenerator : MonoBehaviour {
 
+    // TODO: Make better
+
     public GameObject[] wallDecorations;
     public float wallDecorationPercent = 0.3f;
 
@@ -16,6 +18,11 @@ public class WallGenerator : MonoBehaviour {
             decoration.transform.position = transform.position;
             decoration.transform.rotation = transform.rotation;
             decoration.transform.parent = transform;
+
+            foreach(Renderer r in decoration.GetComponentsInChildren<Renderer>())
+            {
+                r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
         }
 	}
 	

@@ -10,6 +10,7 @@ public class GridObject : MonoBehaviour {
     static GridObject[][] gameGrid = null;
 
     public float slideSpeed = 5f;
+    public FurnitureIcon icon;
 
     private int gridX;
     private int gridY;
@@ -20,7 +21,7 @@ public class GridObject : MonoBehaviour {
     private Vector3 slideVector;
     private int endSlideGridX;
     private int endSlideGridY;
-    private List<GridObject> interlockedObjects;
+    private List<GridObject> interlockedObjects = new List<GridObject>();
 
 	// Use this for initialization
 	void Start () {
@@ -167,7 +168,11 @@ public class GridObject : MonoBehaviour {
     
     public void LockIntoPlaceWithObjects(GridObject[] otherObjects)
     {
-
+        if(interlockedObjects.Count == 0)
+        {
+            // First time interlocking
+            icon.LockIntoPlace();
+        }
     }
 
     int GetGridXPositionFromWorldPosition(Vector3 worldPosition)

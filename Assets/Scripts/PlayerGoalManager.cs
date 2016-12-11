@@ -19,6 +19,7 @@ public class PlayerGoalManager : MonoBehaviour {
     public int sizeOfSets = 3;
     public Canvas winTheGameCanvas;
     public Color playerColor;
+    public List<FurnitureIcon> unmatchedFurnitureIcons = new List<FurnitureIcon>();  // TODO: Make this not have to be in order
 
     private Renderer rRenderer;
     private FurnitureSet[] furnitureSets;
@@ -67,6 +68,9 @@ public class PlayerGoalManager : MonoBehaviour {
 
             newSet.gridObjects.Add(objToAdd);
             gridObjectsInSets.Add(objToAdd);
+
+            objToAdd.icon = unmatchedFurnitureIcons[0];
+            unmatchedFurnitureIcons.RemoveAt(0);
 
             Renderer objRenderer = objToAdd.GetComponentInChildren<Renderer>();
 
