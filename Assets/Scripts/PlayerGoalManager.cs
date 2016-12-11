@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Renderer))]
 public class PlayerGoalManager : MonoBehaviour {
 
     private class FurnitureSet
@@ -17,13 +18,18 @@ public class PlayerGoalManager : MonoBehaviour {
     public int numFurnitureSets = 2;
     public int sizeOfSets = 3;
     public Canvas winTheGameCanvas;
+    public Color playerColor;
 
+    private Renderer rRenderer;
     private FurnitureSet[] furnitureSets;
 
 	// Use this for initialization
 	void Start () {
         SetupGridObjectsOutOfSets();
         CreateSets();
+
+        rRenderer = GetComponent<Renderer>();
+        rRenderer.material.color = playerColor;
 	}
 	
 	// Update is called once per frame
@@ -61,6 +67,15 @@ public class PlayerGoalManager : MonoBehaviour {
 
             newSet.gridObjects.Add(objToAdd);
             gridObjectsInSets.Add(objToAdd);
+
+            Renderer objRenderer = objToAdd.GetComponentInChildren<Renderer>();
+
+            if(objRenderer)
+            {
+                objRenderer.material.color = playerColor;
+            }
+
+            Debug.Log("Adding " + objToAdd + " to " + this);
         }
 
         return newSet;
