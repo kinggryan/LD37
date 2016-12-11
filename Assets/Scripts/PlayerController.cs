@@ -10,13 +10,15 @@ public class PlayerController : MonoBehaviour {
     public int playerNum;
     public float maxSpeed;
     public float timeToReachMaxSpeed;
+    public Animator animator;
 
     private Vector2 previousInputVector;
     private GridObject objectToShove;
     private Vector3 objectToShoveDirection;
 
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Start () {
         characterController = GetComponent<CharacterController>();
         previousInputVector = Vector2.zero;
 	}
@@ -25,7 +27,25 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
         MovePlayer();
         ShoveObjects();
+        if(transform.position.y != 0)
+        {
+            characterController.SimpleMove(new Vector3(0, -transform.position.y, 0));
+        }
+        UpdateAnimator();
 	}
+
+    void UpdateAnimator()
+    {
+        if(previousInputVector.magnitude > 0.01f)
+        {
+            animator.SetFloat("Speed", previousInputVector.magnitude);
+            transform.rotation = Quaternion.LookRotation(new Vector3(previousInputVector.x, 0, previousInputVector.y), Vector3.up);
+        }
+        else
+        {
+            animator.SetFloat("Speed", -1);
+        }
+    }
 
     void MovePlayer()
     {
