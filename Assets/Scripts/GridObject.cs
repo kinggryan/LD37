@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class GridObject : MonoBehaviour {
 
     private enum FurnitureState { Stopped, Sliding, Stopping }
@@ -12,12 +13,14 @@ public class GridObject : MonoBehaviour {
 
     private int gridX;
     private int gridY;
+    private Rigidbody rigidbody;
 
     // Sliding properties
     private FurnitureState furnitureState;
     private Vector3 slideVector;
     private int endSlideGridX;
     private int endSlideGridY;
+    private List<GridObject> interlockedObjects;
 
 	// Use this for initialization
 	void Start () {
@@ -25,6 +28,7 @@ public class GridObject : MonoBehaviour {
             InitializeGameGrid();
 
         SetupOnGrid();
+        rigidbody = GetComponent<Rigidbody>();
 	}
 
     void InitializeGameGrid()
@@ -83,11 +87,46 @@ public class GridObject : MonoBehaviour {
         // TODO: Animate
         transform.position = GetWorldPositionFromGridPosition(gridX, gridY) + new Vector3(0, transform.position.y, 0);
         furnitureState = FurnitureState.Stopped;
+
+        List<GridObject> objects = GetAdjacentGridObjects();
+        PlayerGoalManager.ObjectSlidIntoPlace(this, objects.ToArray());
     }
 
     void SlideToStop()
     {
 
+    }
+
+    List<GridObject> GetAdjacentGridObjects()
+    {
+        // Do a self cast 0.3 in each direction to find objects we are touching that are not moving
+        RaycastHit[] hitInfosFwd = rigidbody.SweepTestAll(Vector3.forward, 0.3f, QueryTriggerInteraction.Collide);
+        RaycastHit[] hitInfosLeft = rigidbody.SweepTestAll(Vector3.left, 0.3f, QueryTriggerInteraction.Collide);
+        RaycastHit[] hitInfosBack = rigidbody.SweepTestAll(Vector3.back, 0.3f, QueryTriggerInteraction.Collide);
+        RaycastHit[] hitInfosRight = rigidbody.SweepTestAll(Vector3.right, 0.3f, QueryTriggerInteraction.Collide);
+        List<RaycastHit> allHits = new List<RaycastHit>();
+        allHits.AddRange(hitInfosFwd);
+        allHits.AddRange(hitInfosLeft);
+        allHits.AddRange(hitInfosBack);
+        allHits.AddRange(hitInfosRight);
+
+        List<GridObject> adjObjs = new List<GridObject>();
+
+        foreach(RaycastHit hitInfo in allHits)
+        {
+            GridObject gridObject = hitInfo.collider.GetComponent<GridObject>();
+            if(gridObject && gridObject != this)
+            {
+                adjObjs.Add(gridObject);
+            }
+        }
+
+        return adjObjs;
+    }
+
+    public bool CanLockIntoPlace()
+    {
+        return furnitureState == FurnitureState.Stopped;
     }
 
     public void ShoveFurniture(Vector3 shoveDirectionWorldSpace)
@@ -111,6 +150,11 @@ public class GridObject : MonoBehaviour {
     public bool CanBeShoved()
     {
         return furnitureState == FurnitureState.Stopped;
+    }
+
+    public void LockIntoPlaceWithObjects(GridObject[] otherObjects)
+    {
+
     }
 
     int GetGridXPositionFromWorldPosition(Vector3 worldPosition)
