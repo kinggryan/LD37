@@ -22,6 +22,8 @@ public class LevelGenerator : MonoBehaviour {
     public float minProportion2x1s;
     public float maxProportion2x1s;
 
+    public GameObject floorPrefab;
+    public GameObject wallPrefab;
     public GameObject[] furniturePrefabs1x1;
     public GameObject[] furniturePrefabs2x1;
 
@@ -44,6 +46,7 @@ public class LevelGenerator : MonoBehaviour {
         CreateGenerationGrid();
         List<LevelGeneratorGridObject> generationGridObjects = PopulateGenerationGrid();
         InstantiateFurnitureForGridObjects(generationGridObjects);
+        GenerateRoom();
     }
 
     void CreateGenerationGrid()
@@ -169,6 +172,72 @@ public class LevelGenerator : MonoBehaviour {
 
             gridObject.width = newWidth;
             gridObject.height = newHeight;
+        }
+    }
+
+    void GenerateRoom()
+    {
+        GenerateFloor();
+        GenerateWalls();
+    }
+
+    void GenerateFloor()
+    {
+        for(int x = 0; x < generationGrid.Length; x++)
+        {
+            for(int y = 0; y < generationGrid[0].Length; y++)
+            {
+                Vector3 positionToSpawn = new Vector3(x - generationGrid.Length / 2 + 0.5f, 0, y - generationGrid[0].Length / 2 + 0.5f);
+                GameObject.Instantiate(floorPrefab, positionToSpawn, Quaternion.identity);
+            }
+        }
+    }
+
+    void GenerateWalls()
+    {
+        GenerateLeftWall();
+        GenerateTopWall();
+        GenerateBottomWall();
+        GenerateRightWall();
+    }
+
+    void GenerateLeftWall()
+    {
+        float xPos = -generationGrid.Length / 2;
+        for(int y = 0; y < generationGrid[0].Length/2; y++)
+        {
+            Vector3 positionToSpawn = new Vector3(xPos, 1, 2*y - generationGrid[0].Length / 2 + 1);
+            GameObject.Instantiate(wallPrefab, positionToSpawn, Quaternion.LookRotation(Vector3.right));
+        }
+    }
+
+    void GenerateRightWall()
+    {
+        float xPos = generationGrid.Length / 2;
+        for (int y = 0; y < generationGrid[0].Length / 2; y++)
+        {
+            Vector3 positionToSpawn = new Vector3(xPos, 1, 2 * y - generationGrid[0].Length / 2 + 1);
+            GameObject.Instantiate(wallPrefab, positionToSpawn, Quaternion.LookRotation(Vector3.left));
+        }
+    }
+
+    void GenerateTopWall()
+    {
+        float yPos = generationGrid.Length / 2;
+        for (int x = 0; x < generationGrid[0].Length / 2; x++)
+        {
+            Vector3 positionToSpawn = new Vector3(2 * x - generationGrid[0].Length / 2 + 1, 1, yPos);
+            GameObject.Instantiate(wallPrefab, positionToSpawn, Quaternion.LookRotation(Vector3.back));
+        }
+    }
+
+    void GenerateBottomWall()
+    {
+        float yPos = -generationGrid.Length / 2;
+        for (int x = 0; x < generationGrid[0].Length / 2; x++)
+        {
+            Vector3 positionToSpawn = new Vector3(2 * x - generationGrid[0].Length / 2 + 1, 1, yPos);
+            GameObject.Instantiate(wallPrefab, positionToSpawn, Quaternion.LookRotation(Vector3.forward));
         }
     }
 }
