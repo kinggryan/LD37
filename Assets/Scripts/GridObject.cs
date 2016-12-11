@@ -129,9 +129,26 @@ public class GridObject : MonoBehaviour {
         return furnitureState == FurnitureState.Stopped;
     }
 
+    public bool CanBeShoved()
+    {
+        return furnitureState == FurnitureState.Stopped;
+    }
+
     public void ShoveFurniture(Vector3 shoveDirectionWorldSpace)
     {
-        if(furnitureState == FurnitureState.Stopped)
+        // TODO: Verify we wouldn't hit a grid object immediately.
+        RaycastHit[] hitsInShoveDirection = rigidbody.SweepTestAll(shoveDirectionWorldSpace, 0.3f, QueryTriggerInteraction.Collide);
+        bool hitGridObj = false;
+        foreach(RaycastHit hitInfo in hitsInShoveDirection)
+        {
+            GridObject gridObj = hitInfo.collider.GetComponent<GridObject>();
+            if( (gridObj && gridObj != this) || hitInfo.collider.GetComponent<Wall>())
+            {
+                hitGridObj = true;
+            }
+        }
+
+        if(furnitureState == FurnitureState.Stopped && !hitGridObj)
         {
             // Determine direction to shove
             if (Mathf.Abs(shoveDirectionWorldSpace.x) > Mathf.Abs(shoveDirectionWorldSpace.z))
@@ -147,11 +164,7 @@ public class GridObject : MonoBehaviour {
         }
     }
 
-    public bool CanBeShoved()
-    {
-        return furnitureState == FurnitureState.Stopped;
-    }
-
+    
     public void LockIntoPlaceWithObjects(GridObject[] otherObjects)
     {
 

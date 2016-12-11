@@ -25,6 +25,10 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
         MovePlayer();
         ShoveObjects();
+        if(transform.position.y != 0)
+        {
+            characterController.SimpleMove(new Vector3(0, -transform.position.y, 0));
+        }
 	}
 
     void MovePlayer()
