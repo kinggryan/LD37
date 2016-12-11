@@ -14,7 +14,6 @@ public class GridObject : MonoBehaviour {
     private int gridX;
     private int gridY;
     private Rigidbody rigidbody;
-    private Animator animator;
 
     // Sliding properties
     private FurnitureState furnitureState;
