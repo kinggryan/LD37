@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class FurnitureIcon : MonoBehaviour {
 
+    public UnityEngine.UI.Image iconImage;
     private Animator animator;
 
     void Start()

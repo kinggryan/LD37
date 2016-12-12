@@ -12,6 +12,7 @@ public class GridObject : MonoBehaviour {
     public float slideSpeed = 5f;
     public FurnitureIcon icon;
     public GameObject linkPrefab;
+    public Sprite iconTex;
 
     private int gridX;
     private int gridY;

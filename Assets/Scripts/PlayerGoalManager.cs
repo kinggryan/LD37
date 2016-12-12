@@ -70,6 +70,7 @@ public class PlayerGoalManager : MonoBehaviour {
             gridObjectsInSets.Add(objToAdd);
 
             objToAdd.icon = unmatchedFurnitureIcons[0];
+            unmatchedFurnitureIcons[0].iconImage.sprite = objToAdd.iconTex;
             unmatchedFurnitureIcons.RemoveAt(0);
 
             Renderer objRenderer = objToAdd.GetComponentInChildren<Renderer>();
