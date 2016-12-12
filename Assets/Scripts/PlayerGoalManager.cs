@@ -108,6 +108,12 @@ public class PlayerGoalManager : MonoBehaviour {
                 set.connectedObjects[index2] = true;
 
                 List<GridObject> objectsToConnect1 = new List<GridObject>(set.gridObjects);
+                for(int i = 0; i < set.connectedObjects.Length; i++)
+                {
+                    if (!set.connectedObjects[i])
+                        objectsToConnect1.RemoveAt(i);
+                }
+
                 objectsToConnect1.Remove(obj1);
                 obj1.LockIntoPlaceWithObjects(objectsToConnect1.ToArray());
                 foreach(GridObject otherObj in objectsToConnect1)
@@ -116,6 +122,12 @@ public class PlayerGoalManager : MonoBehaviour {
                 }
 
                 List<GridObject> objectsToConnect2 = new List<GridObject>(set.gridObjects);
+                for (int i = 0; i < set.connectedObjects.Length; i++)
+                {
+                    if (!set.connectedObjects[i])
+                        objectsToConnect2.RemoveAt(i);
+                }
+
                 objectsToConnect2.Remove(obj2);
                 obj2.LockIntoPlaceWithObjects(objectsToConnect2.ToArray());
                 foreach (GridObject otherObj in objectsToConnect2)
