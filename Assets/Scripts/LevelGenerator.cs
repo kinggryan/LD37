@@ -210,6 +210,7 @@ public class LevelGenerator : MonoBehaviour {
         GenerateLeftWall();
         GenerateTopWall();
         GenerateRightWall();
+        GenerateBottomWall();
     }
 
     void GenerateLeftWall()
@@ -248,7 +249,12 @@ public class LevelGenerator : MonoBehaviour {
         for (int x = 0; x < generationGrid[0].Length / 2; x++)
         {
             Vector3 positionToSpawn = new Vector3(2 * x - generationGrid[0].Length / 2 + 1, 1, yPos);
-            GameObject.Instantiate(wallPrefab, positionToSpawn, Quaternion.LookRotation(Vector3.forward));
+            GameObject obj = GameObject.Instantiate(wallPrefab, positionToSpawn, Quaternion.LookRotation(Vector3.forward));
+            foreach(Renderer r in obj.GetComponentsInChildren<Renderer>())
+            {
+                r.enabled = false;
+            }
+            obj.GetComponentInChildren<WallGenerator>().enabled = false;
         }
     }
 }

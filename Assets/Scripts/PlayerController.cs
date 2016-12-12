@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour {
     public int playerNum;
     public float maxSpeed;
     public float timeToReachMaxSpeed;
+    public float maxPushDistance;
     public Animator animator;
 
     private Vector2 previousInputVector;
@@ -95,6 +96,7 @@ public class PlayerController : MonoBehaviour {
 
     void ShoveObjects()
     {
+       // objectToShove = GetObjectToShove();
         if(Input.GetButtonDown("Shove" + playerNum) && objectToShove)
         {
             // TODO: Fix this for non 1x1 objects
@@ -102,5 +104,19 @@ public class PlayerController : MonoBehaviour {
         }
 
         objectToShove = null;
+    }
+
+    GridObject GetObjectToShove()
+    {
+        RaycastHit[] hitInfos = Physics.SphereCastAll(transform.position + 0.4f*transform.forward, 0.4f, transform.forward, maxPushDistance);
+        foreach(RaycastHit hitInfo in hitInfos)
+        {
+            if(hitInfo.collider.GetComponent<GridObject>())
+            {
+                return hitInfo.collider.GetComponent<GridObject>();
+            }
+        }
+
+        return null;
     }
 }
