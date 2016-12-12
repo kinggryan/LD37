@@ -77,7 +77,7 @@ public class LevelGenerator : MonoBehaviour {
         {
             int randomIndex = Random.Range(0, unspawnedFurniturePrefabs2x1.Count);
             prefabToMake = unspawnedFurniturePrefabs2x1[randomIndex];
-            rotationAngle = (Random.Range(0, 2) + (gridObject.height > 1 ? 1 : 0)) * 90;
+            rotationAngle = gridObject.height > 1 ? 90 : 0; //(Random.Range(0, 2) + (gridObject.height > 1 ? 1 : 0)) * 90;
             unspawnedFurniturePrefabs2x1.RemoveAt(randomIndex);
         }
         else

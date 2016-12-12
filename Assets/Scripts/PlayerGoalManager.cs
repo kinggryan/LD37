@@ -76,7 +76,7 @@ public class PlayerGoalManager : MonoBehaviour {
 
             if(objRenderer)
             {
-                objRenderer.material.color = playerColor;
+            //    objRenderer.material.color = playerColor;
             }
         }
 
