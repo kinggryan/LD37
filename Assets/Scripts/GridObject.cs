@@ -233,9 +233,17 @@ public class GridObject : MonoBehaviour {
                 if(transform.position.x > obj.transform.position.x || (Mathf.Approximately(obj.transform.position.x,transform.position.x) && transform.position.y > obj.transform.position.y))
                 {
                     Vector3 meetingPoint = GetMeetingPointWithGridObject(obj);
-                    Vector3 spawnPoint = meetingPoint;
-                    spawnPoint.y = 0.1f;
-                    GameObject.Instantiate(linkPrefab, spawnPoint, Quaternion.LookRotation(meetingPoint - transform.position, Vector3.up));
+                    if(meetingPoint != Vector3.zero)
+                    {
+                        Vector3 spawnPoint = meetingPoint;
+                        spawnPoint.y = 0.1f;
+                        GameObject link = GameObject.Instantiate(linkPrefab, spawnPoint, Quaternion.LookRotation(meetingPoint - transform.position, Vector3.up));
+                        link.transform.parent = transform;
+                    }
+                    else
+                    {
+                        Debug.LogError("Link spawn error");
+                    }
                 }
             }
         }
@@ -253,11 +261,10 @@ public class GridObject : MonoBehaviour {
         }
         else if (PointsAreGridAligned(transform.position + transform.right, otherGridObject.transform.position))
         {
-            return (transform.position + transform.right + otherGridObject.transform.right) / 2;
+            return (transform.position + transform.right + otherGridObject.transform.position) / 2;
         }
         else
         {
-            Debug.LogError("ERROR: Objects " + this + " and " + otherGridObject + " did not align.");
             return Vector3.zero;
         }
     }
