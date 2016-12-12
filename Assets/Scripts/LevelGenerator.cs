@@ -77,7 +77,7 @@ public class LevelGenerator : MonoBehaviour {
         {
             int randomIndex = Random.Range(0, unspawnedFurniturePrefabs2x1.Count);
             prefabToMake = unspawnedFurniturePrefabs2x1[randomIndex];
-            rotationAngle = (Random.Range(0, 2) + (gridObject.height > 1 ? 1 : 0)) * 90;
+            rotationAngle = gridObject.height > 1 ? -90 : 0; //(Random.Range(0, 2) + (gridObject.height > 1 ? 1 : 0)) * 90;
             unspawnedFurniturePrefabs2x1.RemoveAt(randomIndex);
         }
         else
@@ -142,6 +142,7 @@ public class LevelGenerator : MonoBehaviour {
             gridObj.y = randomY;
             if(ObjectCanFitIntoGrid(gridObj))
             {
+                MarkObjectSpacesFullOnGrid(gridObj);
                 return;
             }
         }
@@ -161,6 +162,17 @@ public class LevelGenerator : MonoBehaviour {
         }
 
         return true;
+    }
+
+    void MarkObjectSpacesFullOnGrid(LevelGeneratorGridObject gridObj)
+    {
+        for (int x = 0; x < gridObj.width; x++)
+        {
+            for (int y = 0; y < gridObj.height; y++)
+            {
+                generationGrid[gridObj.x + x][gridObj.y + y] = true;
+            }
+        }
     }
 
     void RandomizeGridObjectRotation(LevelGeneratorGridObject gridObject)
