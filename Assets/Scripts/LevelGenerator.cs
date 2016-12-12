@@ -142,6 +142,7 @@ public class LevelGenerator : MonoBehaviour {
             gridObj.y = randomY;
             if(ObjectCanFitIntoGrid(gridObj))
             {
+                MarkObjectSpacesFullOnGrid(gridObj);
                 return;
             }
         }
@@ -161,6 +162,17 @@ public class LevelGenerator : MonoBehaviour {
         }
 
         return true;
+    }
+
+    void MarkObjectSpacesFullOnGrid(LevelGeneratorGridObject gridObj)
+    {
+        for (int x = 0; x < gridObj.width; x++)
+        {
+            for (int y = 0; y < gridObj.height; y++)
+            {
+                generationGrid[gridObj.x + x][gridObj.y + y] = true;
+            }
+        }
     }
 
     void RandomizeGridObjectRotation(LevelGeneratorGridObject gridObject)
