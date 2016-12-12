@@ -11,6 +11,7 @@ public class GridObject : MonoBehaviour {
 
     public float slideSpeed = 5f;
     public FurnitureIcon icon;
+    public GameObject linkPrefab;
 
     private int gridX;
     private int gridY;
@@ -69,17 +70,11 @@ public class GridObject : MonoBehaviour {
 
         if (((collidedGridObj && collidedGridObj != this) || wall) && furnitureState == FurnitureState.Sliding)
         {
-            // If we are the object that hit the other object, eg the normals are along our movement axis.
-            // TODO: Will this work with perfectly diagonal collisions?
-            //            float epsilon = 0.1f;
-            //            if (Vector3.Angle(collision.contacts[0].normal, -slideVector.normalized) < epsilon)
-            //            {
             StartSlidingToStop();
             foreach(GridObject obj in interlockedObjects)
             {
                 obj.StartSlidingToStop();
             }
-            //            }
         }
     }
 
@@ -220,6 +215,7 @@ public class GridObject : MonoBehaviour {
             icon.LockIntoPlace();
         }
 
+        
         foreach(GridObject obj in otherObjects)
         {
             foreach(Collider col in obj.GetComponents<Collider>())
@@ -230,8 +226,49 @@ public class GridObject : MonoBehaviour {
                 }
             }
                
-            interlockedObjects.Add(obj);
+            if(interlockedObjects.Add(obj))
+            {
+                // Arbitrarily make it so that only one of the objects adds a link
+                if(transform.position.x > obj.transform.position.x || (Mathf.Approximately(obj.transform.position.x,transform.position.x) && transform.position.y > obj.transform.position.y))
+                {
+                    Vector3 meetingPoint = GetMeetingPointWithGridObject(obj);
+                    Vector3 spawnPoint = meetingPoint;
+                    spawnPoint.y = 0.1f;
+                    GameObject.Instantiate(linkPrefab, spawnPoint, Quaternion.LookRotation(meetingPoint - transform.position, Vector3.up));
+                }
+            }
         }
+    }
+
+    Vector3 GetMeetingPointWithGridObject(GridObject otherGridObject)
+    {
+        if (PointsAreGridAligned(transform.position, otherGridObject.transform.position))
+        {
+            return (transform.position + otherGridObject.transform.position) / 2;
+        }
+        else if (PointsAreGridAligned(transform.position, otherGridObject.transform.position + otherGridObject.transform.right))
+        {
+            return (transform.position + otherGridObject.transform.position + otherGridObject.transform.right) / 2;
+        }
+        else if (PointsAreGridAligned(transform.position + transform.right, otherGridObject.transform.position))
+        {
+            return (transform.position + transform.right + otherGridObject.transform.right) / 2;
+        }
+        else
+        {
+            Debug.LogError("ERROR: Objects " + this + " and " + otherGridObject + " did not align.");
+            return Vector3.zero;
+        }
+    }
+
+    bool PointsAreGridAligned(Vector3 point1, Vector3 point2)
+    {
+        return VectorIsGridAligned(point1 - point2);
+    }
+
+    bool VectorIsGridAligned(Vector3 vector)
+    {
+        return Mathf.Approximately(vector.x, 0) || Mathf.Approximately(vector.z, 0);
     }
 
     int GetGridXPositionFromWorldPosition(Vector3 worldPosition)
