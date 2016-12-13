@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour {
     public float timeToReachMaxSpeed;
     public float maxPushDistance;
     public Animator animator;
+    public ParticleSystem bumpParticleSystem;
 
     private Vector2 previousInputVector;
     private GridObject objectToShove;
@@ -96,9 +97,10 @@ public class PlayerController : MonoBehaviour {
 
     void ShoveObjects()
     {
-       // objectToShove = GetObjectToShove();
-        if(Input.GetButtonDown("Shove" + playerNum) && objectToShove)
+        // objectToShove = GetObjectToShove();
+        if (Input.GetButtonDown("Shove" + playerNum) && objectToShove)
         {
+            GameObject.Instantiate<ParticleSystem>(bumpParticleSystem, transform.position, transform.rotation);
             // TODO: Fix this for non 1x1 objects
             objectToShove.ShoveFurniture(objectToShoveDirection);
         }

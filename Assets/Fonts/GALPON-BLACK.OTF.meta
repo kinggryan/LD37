@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: eb38364d73d4bd8438d2bd686f66dfb7
+timeCreated: 1481576593
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Galpon
+  fontNames:
+  - Galpon
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

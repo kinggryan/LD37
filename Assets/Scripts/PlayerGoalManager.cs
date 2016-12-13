@@ -12,8 +12,9 @@ public class PlayerGoalManager : MonoBehaviour {
         public bool complete;
     }
     
-    static List<GridObject> gridObjectsOutOfSets = new List<GridObject>();
-    static List<GridObject> gridObjectsInSets = new List<GridObject>();
+    // Sorry for making these public
+    public static List<GridObject> gridObjectsOutOfSets = new List<GridObject>();
+    public static List<GridObject> gridObjectsInSets = new List<GridObject>();
 
     public int numFurnitureSets = 2;
     public int sizeOfSets = 3;
@@ -31,7 +32,7 @@ public class PlayerGoalManager : MonoBehaviour {
 
         rRenderer = GetComponent<Renderer>();
         rRenderer.material.color = playerColor;
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -73,7 +74,9 @@ public class PlayerGoalManager : MonoBehaviour {
             unmatchedFurnitureIcons[0].iconImage.sprite = objToAdd.iconTex;
             unmatchedFurnitureIcons.RemoveAt(0);
 
-            Renderer objRenderer = objToAdd.GetComponentInChildren<Renderer>();
+            Renderer objRenderer = null;
+            if (objToAdd != null)
+                objRenderer = objToAdd.GetComponentInChildren<Renderer>();
 
             if(objRenderer)
             {
@@ -188,7 +191,5 @@ public class PlayerGoalManager : MonoBehaviour {
             }
         }
     }
-
-    
     
 }

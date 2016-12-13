@@ -14,6 +14,10 @@ public class GridObject : MonoBehaviour {
     public GameObject linkPrefab;
     public Sprite iconTex;
 
+    public ParticleSystem bumpParticleSystem;
+    public ParticleSystem collideParticleSystem;
+
+
     private int gridX;
     private int gridY;
     private Rigidbody rigidbody;
@@ -71,6 +75,7 @@ public class GridObject : MonoBehaviour {
 
         if (((collidedGridObj && collidedGridObj != this) || wall) && furnitureState == FurnitureState.Sliding)
         {
+            GameObject.Instantiate<ParticleSystem>(collideParticleSystem, transform.position, transform.rotation, transform);
             StartSlidingToStop();
             foreach(GridObject obj in interlockedObjects)
             {
@@ -104,7 +109,7 @@ public class GridObject : MonoBehaviour {
 
     }
 
-    List<GridObject> GetAdjacentGridObjects()
+    public List<GridObject> GetAdjacentGridObjects()
     {
         // Do a self cast 0.3 in each direction to find objects we are touching that are not moving
         RaycastHit[] hitInfosFwd = rigidbody.SweepTestAll(Vector3.forward, 0.3f, QueryTriggerInteraction.Collide);
@@ -153,13 +158,18 @@ public class GridObject : MonoBehaviour {
 
     public void ShoveFurniture(Vector3 shoveDirectionWorldSpace)
     {
-        if(furnitureState == FurnitureState.Stopped && CanBeShovedInDirection(shoveDirectionWorldSpace) && InterlockedObjectsCanBeShovedInDirection(shoveDirectionWorldSpace))
+        if (furnitureState == FurnitureState.Stopped && CanBeShovedInDirection(shoveDirectionWorldSpace) && InterlockedObjectsCanBeShovedInDirection(shoveDirectionWorldSpace))
         {
             SlideInDirection(shoveDirectionWorldSpace);
             foreach(GridObject obj in interlockedObjects)
             {
                 obj.SlideInDirection(shoveDirectionWorldSpace);
             }
+        }
+        else
+        {
+            List<GridObject> objects = GetAdjacentGridObjects();
+            PlayerGoalManager.ObjectSlidIntoPlace(this, objects.ToArray());
         }
     }
 
@@ -210,7 +220,7 @@ public class GridObject : MonoBehaviour {
     
     public void LockIntoPlaceWithObjects(GridObject[] otherObjects)
     {
-        if(interlockedObjects.Count == 0)
+        if (interlockedObjects.Count == 0)
         {
             // First time interlocking
             icon.LockIntoPlace();

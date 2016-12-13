@@ -30,6 +30,7 @@ public class LevelGenerator : MonoBehaviour {
     private bool[][] generationGrid;
     private List<GameObject> unspawnedFurniturePrefabs1x1;
     private List<GameObject> unspawnedFurniturePrefabs2x1;
+    private List<GameObject> gridObjectsList = new List<GameObject>();
 
     // Use this for initialization
     void Start() {
@@ -46,18 +47,29 @@ public class LevelGenerator : MonoBehaviour {
         CreateGenerationGrid();
         List<LevelGeneratorGridObject> generationGridObjects = PopulateGenerationGrid();
         InstantiateFurnitureForGridObjects(generationGridObjects);
+
         GenerateRoom();
+
+
+        foreach (GameObject gridObject in gridObjectsList)
+        {
+            //Debug.Log(gridObject);
+            //EditorGUIUtility.PingObject(gridObject);
+            //Debug.Log(gridObject.GetComponent<GridObject>().GetAdjacentGridObjects());
+            //List<GridObject> objects = gridObject.GetComponent<GridObject>().GetAdjacentGridObjects();
+            //PlayerGoalManager.ObjectSlidIntoPlace(gridObject.GetComponent<GridObject>(), objects.ToArray());
+        }
     }
 
     void CreateGenerationGrid()
     {
         generationGrid = new bool[levelWidth][];
-        for (int i = 0; i < levelHeight; i++)
+        for (int i = 0; i < levelWidth; i++)
         {
             generationGrid[i] = new bool[levelHeight];
         }
     }
-
+    
     void InstantiateFurnitureForGridObjects(List<LevelGeneratorGridObject> gridObjects)
     {
         unspawnedFurniturePrefabs2x1 = new List<GameObject>(furniturePrefabs2x1);
@@ -90,7 +102,8 @@ public class LevelGenerator : MonoBehaviour {
 
         Vector3 positionToSpawn = new Vector3(gridObject.x - generationGrid.Length / 2 + 0.5f, 0.5f, gridObject.y - generationGrid[0].Length / 2 + 0.5f);
 
-        GameObject.Instantiate(prefabToMake, positionToSpawn, Quaternion.AngleAxis(rotationAngle, Vector3.up));
+        GameObject spawnedObject = GameObject.Instantiate(prefabToMake, positionToSpawn, Quaternion.AngleAxis(rotationAngle, Vector3.up));
+        gridObjectsList.Add(spawnedObject);
     }
 
     List<LevelGeneratorGridObject> PopulateGenerationGrid()
@@ -235,20 +248,20 @@ public class LevelGenerator : MonoBehaviour {
 
     void GenerateTopWall()
     {
-        float yPos = generationGrid.Length / 2;
-        for (int x = 0; x < generationGrid[0].Length / 2; x++)
+        float yPos = generationGrid[0].Length / 2;
+        for (int x = 0; x < generationGrid.Length / 2; x++)
         {
-            Vector3 positionToSpawn = new Vector3(2 * x - generationGrid[0].Length / 2 + 1, 1, yPos);
+            Vector3 positionToSpawn = new Vector3(2 * x - generationGrid.Length / 2 + 1, 1, yPos);
             GameObject.Instantiate(wallPrefab, positionToSpawn, Quaternion.LookRotation(Vector3.back));
         }
     }
 
     void GenerateBottomWall()
     {
-        float yPos = -generationGrid.Length / 2;
-        for (int x = 0; x < generationGrid[0].Length / 2; x++)
+        float yPos = -generationGrid[0].Length / 2;
+        for (int x = 0; x < generationGrid.Length / 2; x++)
         {
-            Vector3 positionToSpawn = new Vector3(2 * x - generationGrid[0].Length / 2 + 1, 1, yPos);
+            Vector3 positionToSpawn = new Vector3(2 * x - generationGrid.Length / 2 + 1, 1, yPos);
             GameObject obj = GameObject.Instantiate(wallPrefab, positionToSpawn, Quaternion.LookRotation(Vector3.forward));
             foreach(Renderer r in obj.GetComponentsInChildren<Renderer>())
             {
